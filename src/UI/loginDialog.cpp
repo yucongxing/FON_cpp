@@ -22,6 +22,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     m_userpasswordLineEdit->setEchoMode(QLineEdit::Password);
     layout->addRow(loginBtn);
     QObject::connect(loginBtn, &QPushButton::clicked, this, &LoginDialog::login);
+    this->moveToCenter();
 }
 
 void LoginDialog::moveToCenter() {

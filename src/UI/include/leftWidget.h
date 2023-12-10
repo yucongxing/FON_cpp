@@ -13,6 +13,10 @@ class LeftWidget : public QWidget {
 public:
     LeftWidget(QWidget *parent);
 
+signals:
+    void startProcessSignal();
+    void endProcessSignal();
+
 private:
     QLabel    *task_name;
     QLabel    *task_time;

@@ -20,6 +20,7 @@ LeftWidget::LeftWidget(QWidget *patrent)
       task_name_edit(new QLineEdit(this)),
       task_time_edit_min(new QLineEdit(this)),
       task_time_edit_sec(new QLineEdit(this)),
+      lcd(new QLCDNumber(5, this)),
 
       p_start(new QPushButton("开始", this)),
       p_end(new QPushButton("停止", this)),
@@ -47,17 +48,21 @@ LeftWidget::LeftWidget(QWidget *patrent)
     task_time_layout->addWidget(task_time_edit_sec);
     layout->addLayout(task_time_layout);
 
-    layout->addWidget(new QLabel("倒计时"), 0, Qt::AlignHCenter);
+    QVBoxLayout *lcd_layout = new QVBoxLayout();
+    QLabel *timer_label = new QLabel("倒计时");
+    timer_label->setAlignment(Qt::AlignmentFlag::AlignHCenter);
+    lcd_layout->addWidget(timer_label);
 
-    lcd = new QLCDNumber(5, this);
-    layout->addWidget(lcd);
+    lcd_layout->addWidget(lcd);
+
+    layout->addLayout(lcd_layout);
 
     layout->addWidget(p_start);
     layout->addWidget(p_pause);
     layout->addWidget(p_end);
 
     // logic
-    val   = 10;
+    val   = 120;
     timer = new QTimer(this);
     timer->setInterval(1000);
     lcd->display("00:00");
@@ -78,6 +83,7 @@ LeftWidget::LeftWidget(QWidget *patrent)
         }
 
         this->timer->start();
+        emit startProcessSignal();
 
         this->p_start->setEnabled(false);
         this->p_end->setEnabled(true);
@@ -88,10 +94,12 @@ LeftWidget::LeftWidget(QWidget *patrent)
         if (!this->m_pause) {
             this->timer->stop();
             this->m_pause = true;
+            emit endProcessSignal();
         } else {
-            this->timer->setInterval(1000);
             this->timer->start();
+            this->timer->setInterval(1000);
             this->m_pause = false;
+            emit startProcessSignal();
         }
         exchangeText();
     });
@@ -132,6 +140,7 @@ void LeftWidget::onEnd() {
 
     timer->stop();
     lcd->display("00:00");
-    QMessageBox *mes = new QMessageBox(QMessageBox::Information,"result" ,"process is done!", QMessageBox::NoButton, this);
+    emit endProcessSignal();
+    QMessageBox *mes = new QMessageBox(QMessageBox::Information, "result", "process is done!", QMessageBox::NoButton, this);
     mes->show();
 }
