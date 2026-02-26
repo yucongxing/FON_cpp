@@ -68,17 +68,16 @@ LeftWidget::LeftWidget(QWidget *patrent)
     lcd->display("00:00");
     p_pause->setEnabled(false);
     p_end->setEnabled(false);
-    m_stop  = true;
     m_pause = false;
 
     connect(p_start, &QPushButton::clicked, this, [&]() {
         QString min_str = task_time_edit_min->text();
-        QString sec_str = task_time_edit_min->text();
+        QString sec_str = task_time_edit_sec->text();
         if (min_str.isEmpty() && sec_str.isEmpty()) {
             this->val = 120;
         } else {
             int min_num = min_str.toInt();
-            int sec_num = min_str.toInt();
+            int sec_num = sec_str.toInt();
             this->val   = min_num * 60 + sec_num;
         }
 
@@ -133,7 +132,6 @@ void LeftWidget::onEnd() {
     m_pause = false;
     exchangeText();
 
-    m_stop = true;
     p_start->setEnabled(true);
     p_pause->setEnabled(false);
     p_end->setEnabled(false);

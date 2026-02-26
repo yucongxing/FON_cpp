@@ -10,7 +10,6 @@
 class LoginDialog : public QDialog {
 public:
   LoginDialog(QWidget *parent = nullptr);
-  void setMainWindown(MainWindow *mw);
 
   ~LoginDialog() override;
 

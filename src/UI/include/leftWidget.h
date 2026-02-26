@@ -27,7 +27,6 @@ private:
     QPushButton *p_start;
     QPushButton *p_end;
     QPushButton *p_pause;
-    bool m_stop;
     bool m_pause;
 
     QTimer *timer;

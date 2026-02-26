@@ -64,9 +64,9 @@ void MainWindow::setSignalAndSlots() {
 }
 
 void MainWindow::refreshFrame(const QImage &img) {
-    img.scaled(show_frame1->size());
-    show_frame1->setPixmap(QPixmap::fromImage(img));
-    show_frame2->setPixmap(QPixmap::fromImage(img));
+    QPixmap px = QPixmap::fromImage(img).scaled(show_frame1->size(), Qt::KeepAspectRatio);
+    show_frame1->setPixmap(px);
+    show_frame2->setPixmap(px);
 }
 
 MainWindow::~MainWindow() { delete central_window; }
