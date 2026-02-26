@@ -1,6 +1,7 @@
 #include "cameraWorker.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include "FocusAnalyzer.h"
 
 CameraWorker::CameraWorker(QObject *parent) : QThread(parent) {}
@@ -31,25 +32,34 @@ void CameraWorker::run() {
         (QCoreApplication::applicationDirPath() + "/data/haarcascades").toStdString();
     FocusAnalyzer analyzer(cascade_dir);
 
+    if (!analyzer.isLoaded()) {
+        qWarning() << "[CameraWorker] Cascade files not found at:"
+                   << QString::fromStdString(cascade_dir)
+                   << "- detection disabled";
+    }
+
     m_scorer.reset();
 
-    bool prev_focused       = true;
-    auto last_score_emit    = std::chrono::steady_clock::now();
+    int           frame_count    = 0;
+    FrameAnalysis last_result;
+    bool          prev_focused   = true;
+    auto          last_score_emit = std::chrono::steady_clock::now();
 
     while (m_running) {
         cv::Mat frame = cap.getFrame();
         if (frame.empty()) continue;
 
         cv::Mat analyzed = frame.clone();
-        FrameAnalysis result;
         if (analyzer.isLoaded()) {
-            result = analyzer.analyze(frame);
-            analyzer.drawResults(analyzed, result);
+            if (frame_count % 3 == 0)
+                last_result = analyzer.analyze(frame);
+            analyzer.drawResults(analyzed, last_result);
         }
+        frame_count++;
 
         emit frameReady(matToQImage(frame), matToQImage(analyzed));
 
-        m_scorer.update(result);
+        m_scorer.update(last_result);
 
         bool focused = m_scorer.isFocused();
         if (focused != prev_focused) {
