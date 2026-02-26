@@ -12,11 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
       splitter(new QSplitter(central_window)),
       left_widget(new LeftWidget(splitter)),
       right_widget(new QWidget(splitter)),
-      start_cap(new QPushButton("start")) ,
-      camera_thead(new CameraThead()),
+      start_cap(new QPushButton("start")),
+      camera_worker(new CameraWorker(this)),
       show_frame1(new QLabel()),
-      show_frame2(new QLabel()),
-      timer_show_frame(new QTimer())
+      show_frame2(new QLabel())
 {
     this->setWindowTitle("Focus On Now");
     this->setMenuBar(new QMenuBar());
@@ -52,15 +51,13 @@ MainWindow::MainWindow(QWidget *parent)
     central_window->setLayout(hlayout);
 
     this->setCentralWidget(this->central_window);
-    timer_show_frame->setInterval(33);
     setSignalAndSlots();
 }
 
 void MainWindow::setSignalAndSlots() {
-    connect(camera_thead, &CameraThead::refreshFrameSignal, this, &MainWindow::refreshFrame);
-    connect(timer_show_frame, &QTimer::timeout, camera_thead, &CameraThead::refreshFrame);
-    connect(left_widget, &LeftWidget::endProcessSignal, timer_show_frame, &QTimer::stop);
-    connect(left_widget, &LeftWidget::startProcessSignal, timer_show_frame, qOverload<>(&QTimer::start));
+    connect(camera_worker, &CameraWorker::frameReady, this, &MainWindow::refreshFrame);
+    connect(left_widget, &LeftWidget::startProcessSignal, camera_worker, &CameraWorker::startCapture);
+    connect(left_widget, &LeftWidget::endProcessSignal,   camera_worker, &CameraWorker::stopCapture);
 }
 
 void MainWindow::refreshFrame(const QImage &img) {
@@ -69,4 +66,7 @@ void MainWindow::refreshFrame(const QImage &img) {
     show_frame2->setPixmap(px);
 }
 
-MainWindow::~MainWindow() { delete central_window; }
+MainWindow::~MainWindow() {
+    camera_worker->stopCapture();
+    delete central_window;
+}

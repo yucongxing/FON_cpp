@@ -15,11 +15,11 @@ target_sources(FON_UI
     mainwindow.cpp
     loginDialog.cpp
     leftWidget.cpp
-    CameraThead.cpp
+    cameraWorker.cpp
     include/leftWidget.h
     include/mainwindow.h
     include/loginDialog.h
-    include/CameraThead.h)
+    include/cameraWorker.h)
 target_link_libraries(FON_UI PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets algorithm)
 target_include_directories(FON_UI PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 

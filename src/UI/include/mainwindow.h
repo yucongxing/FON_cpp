@@ -4,10 +4,9 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSplitter>
-#include <QTimer>
 #include <QWidget>
 
-#include "cameraThead.h"
+#include "cameraWorker.h"
 #include "leftWidget.h"
 
 class MainWindow : public QMainWindow {
@@ -16,24 +15,21 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow() override;
-signals:
 
 public slots:
     void refreshFrame(const QImage &img);
 
 private:
-    QWidget     *central_window;
-    QSplitter   *splitter{nullptr};
-    LeftWidget  *left_widget;
-    QWidget     *right_widget;
-    QPushButton *start_cap;
-    QLabel *show_frame1;
-    QLabel *show_frame2;
+    QWidget      *central_window;
+    QSplitter    *splitter{nullptr};
+    LeftWidget   *left_widget;
+    QWidget      *right_widget;
+    QPushButton  *start_cap;
+    QLabel       *show_frame1;
+    QLabel       *show_frame2;
+    CameraWorker *camera_worker;
 
-    QTimer      *timer_show_frame;
-    CameraThead *camera_thead;
-
-    void         setSignalAndSlots();
+    void setSignalAndSlots();
 };
 
 #endif  // !UI_MAINWINDOWN_H
