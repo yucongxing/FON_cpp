@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
       start_cap(new QPushButton("start")),
       camera_worker(new CameraWorker(this)),
       show_frame1(new QLabel()),
-      show_frame2(new QLabel())
+      show_frame2(new QLabel()),
+      score_overlay(new QLabel("--", show_frame2))
 {
     this->setWindowTitle("Focus On Now");
     this->setMenuBar(new QMenuBar());
@@ -51,18 +52,36 @@ MainWindow::MainWindow(QWidget *parent)
     central_window->setLayout(hlayout);
 
     this->setCentralWidget(this->central_window);
+
+    score_overlay->setStyleSheet(
+        "background-color: rgba(0,0,0,160);"
+        "color: white;"
+        "padding: 4px 8px;"
+        "border-radius: 4px;"
+        "font-weight: bold;");
+    score_overlay->adjustSize();
+    score_overlay->move(8, 8);
+    score_overlay->raise();
+
     setSignalAndSlots();
 }
 
 void MainWindow::setSignalAndSlots() {
-    connect(camera_worker, &CameraWorker::frameReady, this, &MainWindow::refreshFrame);
-    connect(left_widget, &LeftWidget::startProcessSignal, camera_worker, &CameraWorker::startCapture);
-    connect(left_widget, &LeftWidget::endProcessSignal,   camera_worker, &CameraWorker::stopCapture);
+    connect(camera_worker, &CameraWorker::frameReady,         this, &MainWindow::refreshFrame);
+    connect(camera_worker, &CameraWorker::focusScoreUpdated,  this, &MainWindow::onFocusScoreUpdated);
+    connect(left_widget,   &LeftWidget::startProcessSignal,   camera_worker, &CameraWorker::startCapture);
+    connect(left_widget,   &LeftWidget::endProcessSignal,     camera_worker, &CameraWorker::stopCapture);
 }
 
 void MainWindow::refreshFrame(const QImage &original, const QImage &analyzed) {
     show_frame1->setPixmap(QPixmap::fromImage(original).scaled(show_frame1->size(), Qt::KeepAspectRatio));
     show_frame2->setPixmap(QPixmap::fromImage(analyzed).scaled(show_frame2->size(), Qt::KeepAspectRatio));
+    score_overlay->raise();
+}
+
+void MainWindow::onFocusScoreUpdated(int score) {
+    score_overlay->setText(QString("专注度 %1%").arg(score));
+    score_overlay->adjustSize();
 }
 
 MainWindow::~MainWindow() {

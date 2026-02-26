@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "CameraCapture.h"
+#include "FocusScorer.h"
 
 class CameraWorker : public QThread {
     Q_OBJECT
@@ -12,8 +13,12 @@ public:
     explicit CameraWorker(QObject *parent = nullptr);
     ~CameraWorker() override;
 
+    const std::vector<FocusEvent>& focusEvents() const;
+
 signals:
     void frameReady(const QImage &original, const QImage &analyzed);
+    void focusStateChanged(bool is_focused);
+    void focusScoreUpdated(int score);
 
 public slots:
     void startCapture();
@@ -24,5 +29,6 @@ protected:
 
 private:
     std::atomic<bool> m_running{false};
+    FocusScorer       m_scorer;
     static QImage matToQImage(const cv::Mat &mat);
 };

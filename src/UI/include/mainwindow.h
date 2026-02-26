@@ -18,6 +18,7 @@ public:
 
 public slots:
     void refreshFrame(const QImage &original, const QImage &analyzed);
+    void onFocusScoreUpdated(int score);
 
 private:
     QWidget      *central_window;
@@ -27,6 +28,7 @@ private:
     QPushButton  *start_cap;
     QLabel       *show_frame1;
     QLabel       *show_frame2;
+    QLabel       *score_overlay;
     CameraWorker *camera_worker;
 
     void setSignalAndSlots();
