@@ -60,10 +60,9 @@ void MainWindow::setSignalAndSlots() {
     connect(left_widget, &LeftWidget::endProcessSignal,   camera_worker, &CameraWorker::stopCapture);
 }
 
-void MainWindow::refreshFrame(const QImage &img) {
-    QPixmap px = QPixmap::fromImage(img).scaled(show_frame1->size(), Qt::KeepAspectRatio);
-    show_frame1->setPixmap(px);
-    show_frame2->setPixmap(px);
+void MainWindow::refreshFrame(const QImage &original, const QImage &analyzed) {
+    show_frame1->setPixmap(QPixmap::fromImage(original).scaled(show_frame1->size(), Qt::KeepAspectRatio));
+    show_frame2->setPixmap(QPixmap::fromImage(analyzed).scaled(show_frame2->size(), Qt::KeepAspectRatio));
 }
 
 MainWindow::~MainWindow() {

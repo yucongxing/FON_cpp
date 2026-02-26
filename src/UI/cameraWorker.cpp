@@ -1,5 +1,8 @@
 #include "cameraWorker.h"
 
+#include <QCoreApplication>
+#include "FocusAnalyzer.h"
+
 CameraWorker::CameraWorker(QObject *parent) : QThread(parent) {}
 
 CameraWorker::~CameraWorker() {
@@ -19,10 +22,23 @@ void CameraWorker::stopCapture() {
 
 void CameraWorker::run() {
     CameraCapture cap;
+
+    std::string cascade_path =
+        (QCoreApplication::applicationDirPath() + "/data/haarcascades/haarcascade_frontalface_default.xml")
+            .toStdString();
+    FocusAnalyzer analyzer(cascade_path);
+
     while (m_running) {
         cv::Mat frame = cap.getFrame();
         if (frame.empty()) continue;
-        emit frameReady(matToQImage(frame));
+
+        cv::Mat analyzed = frame.clone();
+        if (analyzer.isLoaded()) {
+            FrameAnalysis result = analyzer.analyze(frame);
+            analyzer.drawResults(analyzed, result);
+        }
+
+        emit frameReady(matToQImage(frame), matToQImage(analyzed));
     }
 }
 

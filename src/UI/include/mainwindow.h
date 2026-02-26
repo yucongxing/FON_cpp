@@ -17,7 +17,7 @@ public:
     ~MainWindow() override;
 
 public slots:
-    void refreshFrame(const QImage &img);
+    void refreshFrame(const QImage &original, const QImage &analyzed);
 
 private:
     QWidget      *central_window;

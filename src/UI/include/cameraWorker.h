@@ -13,7 +13,7 @@ public:
     ~CameraWorker() override;
 
 signals:
-    void frameReady(const QImage &frame);
+    void frameReady(const QImage &original, const QImage &analyzed);
 
 public slots:
     void startCapture();
