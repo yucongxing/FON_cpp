@@ -23,10 +23,9 @@ void CameraWorker::stopCapture() {
 void CameraWorker::run() {
     CameraCapture cap;
 
-    std::string cascade_path =
-        (QCoreApplication::applicationDirPath() + "/data/haarcascades/haarcascade_frontalface_default.xml")
-            .toStdString();
-    FocusAnalyzer analyzer(cascade_path);
+    std::string cascade_dir =
+        (QCoreApplication::applicationDirPath() + "/data/haarcascades").toStdString();
+    FocusAnalyzer analyzer(cascade_dir);
 
     while (m_running) {
         cv::Mat frame = cap.getFrame();
