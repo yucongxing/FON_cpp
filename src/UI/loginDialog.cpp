@@ -36,8 +36,6 @@ void LoginDialog::moveToCenter() {
 LoginDialog::~LoginDialog() {}
 
 void LoginDialog::login() {
-    MainWindow *m_mainwindow = new MainWindow();
-    m_mainwindow->setAttribute(Qt::WA_DeleteOnClose);
-    m_mainwindow->show();
+    emit loginSuccess();
     this->close();
 }
