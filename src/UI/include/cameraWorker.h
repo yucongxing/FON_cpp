@@ -27,6 +27,7 @@ protected:
 
 private:
     std::atomic<bool> m_running{false};
+    CameraCapture     m_cap;
     FocusScorer       m_scorer;
     static QImage matToQImage(const cv::Mat &mat);
 };

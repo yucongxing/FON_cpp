@@ -34,6 +34,7 @@ void LoginDialog::moveToCenter() {
 LoginDialog::~LoginDialog() {}
 
 void LoginDialog::login() {
+    // TODO: validate credentials against authentication server
     emit loginSuccess();
     this->close();
 }

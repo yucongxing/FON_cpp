@@ -39,7 +39,6 @@ FrameAnalysis FocusAnalyzer::analyze(const cv::Mat &frame) {
         result.faces.push_back(face);
     }
 
-    result.has_face = !result.faces.empty();
     return result;
 }
 

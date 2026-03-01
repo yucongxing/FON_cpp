@@ -13,11 +13,10 @@ void FocusScorer::reset() {
     m_session_start   = Clock::now();
 }
 
-void FocusScorer::update(const FrameAnalysis &analysis) {
-    bool signal_focused = !analysis.faces.empty() && analysis.faces[0].eyes_open;
-    auto now            = Clock::now();
+void FocusScorer::update(bool is_focused) {
+    auto now = Clock::now();
 
-    if (signal_focused) {
+    if (is_focused) {
         m_pending_unfocus = false;
         if (!m_focused) {
             m_focused = true;

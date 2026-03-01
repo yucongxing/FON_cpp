@@ -12,7 +12,6 @@ struct FaceData {
 };
 
 struct FrameAnalysis {
-    bool has_face = false;
     std::vector<FaceData> faces;
 };
 

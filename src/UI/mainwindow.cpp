@@ -76,7 +76,6 @@ void MainWindow::setSignalAndSlots() {
 void MainWindow::refreshFrame(const QImage &original, const QImage &analyzed) {
     show_frame1->setPixmap(QPixmap::fromImage(original).scaled(show_frame1->size(), Qt::KeepAspectRatio));
     show_frame2->setPixmap(QPixmap::fromImage(analyzed).scaled(show_frame2->size(), Qt::KeepAspectRatio));
-    score_overlay->raise();
 }
 
 void MainWindow::onFocusScoreUpdated(int score) {

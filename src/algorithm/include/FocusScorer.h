@@ -3,8 +3,6 @@
 #include <chrono>
 #include <vector>
 
-#include "FocusAnalyzer.h"
-
 struct FocusEvent {
     std::chrono::steady_clock::time_point timestamp;
     enum class Type { LOST, REGAINED } type;
@@ -12,7 +10,7 @@ struct FocusEvent {
 
 class FocusScorer {
 public:
-    void update(const FrameAnalysis &analysis);
+    void update(bool is_focused);
     bool isFocused() const;
     int  realtimeScore() const;  // 0-100, 60s rolling window
     void reset();

@@ -23,8 +23,6 @@ void CameraWorker::stopCapture() {
 }
 
 void CameraWorker::run() {
-    CameraCapture cap;
-
     std::string cascade_dir =
         (QCoreApplication::applicationDirPath() + "/data/haarcascades").toStdString();
     FocusAnalyzer analyzer(cascade_dir);
@@ -45,7 +43,7 @@ void CameraWorker::run() {
     while (m_running) {
         auto frame_start = std::chrono::steady_clock::now();
 
-        cv::Mat frame = cap.getFrame();
+        cv::Mat frame = m_cap.getFrame();
         if (frame.empty()) continue;
 
         cv::Mat analyzed = frame.clone();
@@ -58,7 +56,8 @@ void CameraWorker::run() {
 
         emit frameReady(matToQImage(frame), matToQImage(analyzed));
 
-        m_scorer.update(last_result);
+        bool is_focused = !last_result.faces.empty() && last_result.faces[0].eyes_open;
+        m_scorer.update(is_focused);
 
         bool focused = m_scorer.isFocused();
         if (focused != prev_focused) {
