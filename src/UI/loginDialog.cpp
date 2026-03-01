@@ -1,6 +1,5 @@
 #include "loginDialog.h"
 
-#include <qdesktopwidget.h>
 #include <qformlayout.h>
 #include <qguiapplication.h>
 #include <qlabel.h>
@@ -16,7 +15,6 @@ LoginDialog::LoginDialog(QWidget *parent)
       m_userpasswordLineEdit(new QLineEdit(this)) {
     this->setWindowTitle("Login");
     QFormLayout *layout = new QFormLayout(this);
-    layout->setGeometry(QGuiApplication::primaryScreen()->geometry());
     layout->addRow(new QLabel("Username:"), m_usernameLineEdit);
     layout->addRow(new QLabel("Password:"), m_userpasswordLineEdit);
     m_userpasswordLineEdit->setEchoMode(QLineEdit::Password);

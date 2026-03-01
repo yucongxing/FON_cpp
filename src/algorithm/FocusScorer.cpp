@@ -1,19 +1,19 @@
 #include "FocusScorer.h"
 
-using clock     = std::chrono::steady_clock;
-using time_point = clock::time_point;
-using duration  = std::chrono::duration<double>;
+using Clock      = std::chrono::steady_clock;
+using time_point = Clock::time_point;
+using duration   = std::chrono::duration<double>;
 
 void FocusScorer::reset() {
     m_events.clear();
     m_focused         = true;
     m_pending_unfocus = false;
-    m_session_start   = clock::now();
+    m_session_start   = Clock::now();
 }
 
 void FocusScorer::update(const FrameAnalysis &analysis) {
     bool signal_focused = analysis.has_face && analysis.faces[0].eyes_open;
-    auto now            = clock::now();
+    auto now            = Clock::now();
 
     if (signal_focused) {
         m_pending_unfocus = false;
@@ -40,7 +40,7 @@ bool FocusScorer::isFocused() const {
 }
 
 int FocusScorer::realtimeScore() const {
-    auto now          = clock::now();
+    auto now          = Clock::now();
     auto window_start = std::max(now - SCORE_WINDOW, m_session_start);
 
     // Find state at window_start by scanning events before it
