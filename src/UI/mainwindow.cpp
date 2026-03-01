@@ -2,7 +2,6 @@
 
 #include <qboxlayout.h>
 #include <qmenubar.h>
-#include <qpushbutton.h>
 
 #include <QWidget>
 
@@ -12,11 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
       splitter(new QSplitter(central_window)),
       left_widget(new LeftWidget(splitter)),
       right_widget(new QWidget(splitter)),
-      start_cap(new QPushButton("start")) ,
-      camera_thead(new CameraThead()),
+      camera_worker(new CameraWorker(this)),
       show_frame1(new QLabel()),
       show_frame2(new QLabel()),
-      timer_show_frame(new QTimer())
+      score_overlay(new QLabel("--", show_frame2))
 {
     this->setWindowTitle("Focus On Now");
     this->setMenuBar(new QMenuBar());
@@ -32,13 +30,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     QHBoxLayout *label_layout  = new QHBoxLayout();
 
-    show_frame1->setFixedSize(500, 500);
-    show_frame2->setFixedSize(500, 500);
+    show_frame1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    show_frame1->setMinimumSize(200, 150);
+    show_frame1->setAlignment(Qt::AlignCenter);
+    show_frame2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    show_frame2->setMinimumSize(200, 150);
+    show_frame2->setAlignment(Qt::AlignCenter);
     label_layout->addWidget(show_frame1);
     label_layout->addWidget(show_frame2);
     right_hlayout->addLayout(label_layout);
-
-    right_hlayout->addWidget(start_cap);
     right_widget->setLayout(right_hlayout);
 
     splitter->setStretchFactor(splitter->indexOf(left_widget), 1);
@@ -52,21 +52,38 @@ MainWindow::MainWindow(QWidget *parent)
     central_window->setLayout(hlayout);
 
     this->setCentralWidget(this->central_window);
-    timer_show_frame->setInterval(33);
+
+    score_overlay->setStyleSheet(
+        "background-color: rgba(0,0,0,160);"
+        "color: white;"
+        "padding: 4px 8px;"
+        "border-radius: 4px;"
+        "font-weight: bold;");
+    score_overlay->adjustSize();
+    score_overlay->move(8, 8);
+    score_overlay->raise();
+
     setSignalAndSlots();
 }
 
 void MainWindow::setSignalAndSlots() {
-    connect(camera_thead, &CameraThead::refreshFrameSignal, this, &MainWindow::refreshFrame);
-    connect(timer_show_frame, &QTimer::timeout, camera_thead, &CameraThead::refreshFrame);
-    connect(left_widget, &LeftWidget::endProcessSignal, timer_show_frame, &QTimer::stop);
-    connect(left_widget, &LeftWidget::startProcessSignal, timer_show_frame, qOverload<>(&QTimer::start));
+    connect(camera_worker, &CameraWorker::frameReady,         this, &MainWindow::refreshFrame);
+    connect(camera_worker, &CameraWorker::focusScoreUpdated,  this, &MainWindow::onFocusScoreUpdated);
+    connect(left_widget,   &LeftWidget::startProcessSignal,   camera_worker, &CameraWorker::startCapture);
+    connect(left_widget,   &LeftWidget::endProcessSignal,     camera_worker, &CameraWorker::stopCapture);
 }
 
-void MainWindow::refreshFrame(const QImage &img) {
-    QPixmap px = QPixmap::fromImage(img).scaled(show_frame1->size(), Qt::KeepAspectRatio);
-    show_frame1->setPixmap(px);
-    show_frame2->setPixmap(px);
+void MainWindow::refreshFrame(const QImage &original, const QImage &analyzed) {
+    show_frame1->setPixmap(QPixmap::fromImage(original).scaled(show_frame1->size(), Qt::KeepAspectRatio));
+    show_frame2->setPixmap(QPixmap::fromImage(analyzed).scaled(show_frame2->size(), Qt::KeepAspectRatio));
 }
 
-MainWindow::~MainWindow() { delete central_window; }
+void MainWindow::onFocusScoreUpdated(int score) {
+    score_overlay->setText(QString("专注度 %1%").arg(score));
+    score_overlay->adjustSize();
+}
+
+MainWindow::~MainWindow() {
+    camera_worker->stopCapture();
+    delete central_window;
+}

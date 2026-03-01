@@ -3,15 +3,18 @@
 
 #include <qdialog.h>
 #include <qlineedit.h>
+#include <qpushbutton.h>
 #include <qwidget.h>
 
-#include "mainwindow.h"
-
 class LoginDialog : public QDialog {
+    Q_OBJECT
 public:
   LoginDialog(QWidget *parent = nullptr);
 
   ~LoginDialog() override;
+
+signals:
+  void loginSuccess();
 
 private:
   QPushButton *loginBtn;

@@ -38,10 +38,10 @@ LeftWidget::LeftWidget(QWidget *patrent)
 
     QHBoxLayout *task_time_layout = new QHBoxLayout();
     task_time_layout->addWidget(task_time);
-    task_time_edit_min->setInputMask("0009");
+    task_time_edit_min->setPlaceholderText("分");
     task_time_edit_min->setValidator(new QIntValidator(0, 24 * 60, task_time_edit_min));
-    task_time_edit_sec->setInputMask("09");
-    task_time_edit_sec->setValidator(new QIntValidator(0, 60, task_time_edit_sec));
+    task_time_edit_sec->setPlaceholderText("秒");
+    task_time_edit_sec->setValidator(new QIntValidator(0, 59, task_time_edit_sec));
 
     task_time_layout->addWidget(task_time_edit_min);
     task_time_layout->addWidget(new QLabel(":", this));
