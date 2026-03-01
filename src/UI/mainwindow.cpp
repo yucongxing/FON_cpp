@@ -2,7 +2,6 @@
 
 #include <qboxlayout.h>
 #include <qmenubar.h>
-#include <qpushbutton.h>
 
 #include <QWidget>
 
@@ -12,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
       splitter(new QSplitter(central_window)),
       left_widget(new LeftWidget(splitter)),
       right_widget(new QWidget(splitter)),
-      start_cap(new QPushButton("start")),
       camera_worker(new CameraWorker(this)),
       show_frame1(new QLabel()),
       show_frame2(new QLabel()),
@@ -32,13 +30,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     QHBoxLayout *label_layout  = new QHBoxLayout();
 
-    show_frame1->setFixedSize(500, 500);
-    show_frame2->setFixedSize(500, 500);
+    show_frame1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    show_frame1->setMinimumSize(200, 150);
+    show_frame1->setAlignment(Qt::AlignCenter);
+    show_frame2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    show_frame2->setMinimumSize(200, 150);
+    show_frame2->setAlignment(Qt::AlignCenter);
     label_layout->addWidget(show_frame1);
     label_layout->addWidget(show_frame2);
     right_hlayout->addLayout(label_layout);
-
-    right_hlayout->addWidget(start_cap);
     right_widget->setLayout(right_hlayout);
 
     splitter->setStretchFactor(splitter->indexOf(left_widget), 1);

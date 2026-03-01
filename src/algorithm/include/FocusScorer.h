@@ -15,7 +15,6 @@ public:
     void update(const FrameAnalysis &analysis);
     bool isFocused() const;
     int  realtimeScore() const;  // 0-100, 60s rolling window
-    const std::vector<FocusEvent>& events() const;
     void reset();
 
 private:

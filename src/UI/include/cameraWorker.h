@@ -13,8 +13,6 @@ public:
     explicit CameraWorker(QObject *parent = nullptr);
     ~CameraWorker() override;
 
-    const std::vector<FocusEvent>& focusEvents() const;
-
 signals:
     void frameReady(const QImage &original, const QImage &analyzed);
     void focusStateChanged(bool is_focused);

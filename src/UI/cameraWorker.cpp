@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <thread>
 #include "FocusAnalyzer.h"
 
 CameraWorker::CameraWorker(QObject *parent) : QThread(parent) {}
@@ -19,10 +20,6 @@ void CameraWorker::startCapture() {
 void CameraWorker::stopCapture() {
     m_running = false;
     wait();
-}
-
-const std::vector<FocusEvent>& CameraWorker::focusEvents() const {
-    return m_scorer.events();
 }
 
 void CameraWorker::run() {
@@ -46,6 +43,8 @@ void CameraWorker::run() {
     auto          last_score_emit = std::chrono::steady_clock::now();
 
     while (m_running) {
+        auto frame_start = std::chrono::steady_clock::now();
+
         cv::Mat frame = cap.getFrame();
         if (frame.empty()) continue;
 
@@ -72,6 +71,12 @@ void CameraWorker::run() {
             emit focusScoreUpdated(m_scorer.realtimeScore());
             last_score_emit = now;
         }
+
+        // Cap frame rate at ~30 fps
+        auto elapsed   = std::chrono::steady_clock::now() - frame_start;
+        auto remaining = std::chrono::milliseconds(33) - elapsed;
+        if (remaining > std::chrono::milliseconds(0))
+            std::this_thread::sleep_for(remaining);
     }
 }
 

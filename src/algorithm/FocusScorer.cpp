@@ -1,5 +1,7 @@
 #include "FocusScorer.h"
 
+#include <algorithm>
+
 using Clock      = std::chrono::steady_clock;
 using time_point = Clock::time_point;
 using duration   = std::chrono::duration<double>;
@@ -12,7 +14,7 @@ void FocusScorer::reset() {
 }
 
 void FocusScorer::update(const FrameAnalysis &analysis) {
-    bool signal_focused = analysis.has_face && analysis.faces[0].eyes_open;
+    bool signal_focused = !analysis.faces.empty() && analysis.faces[0].eyes_open;
     auto now            = Clock::now();
 
     if (signal_focused) {
@@ -32,6 +34,16 @@ void FocusScorer::update(const FrameAnalysis &analysis) {
                 m_events.push_back({m_pending_since, FocusEvent::Type::LOST});
             }
         }
+    }
+
+    // Prune events older than SCORE_WINDOW, keeping one before the boundary
+    // so realtimeScore() can reconstruct the state at window_start.
+    auto cutoff = now - SCORE_WINDOW;
+    auto first_in_window = std::lower_bound(
+        m_events.begin(), m_events.end(), cutoff,
+        [](const FocusEvent &e, const time_point &t) { return e.timestamp < t; });
+    if (first_in_window != m_events.begin()) {
+        m_events.erase(m_events.begin(), std::prev(first_in_window));
     }
 }
 
@@ -67,6 +79,3 @@ int FocusScorer::realtimeScore() const {
     return static_cast<int>(focused_time / window_duration * 100);
 }
 
-const std::vector<FocusEvent>& FocusScorer::events() const {
-    return m_events;
-}

@@ -2,7 +2,6 @@
 #define UI_MAINWINDOWN_H
 
 #include <QMainWindow>
-#include <QPushButton>
 #include <QSplitter>
 #include <QWidget>
 
@@ -25,7 +24,6 @@ private:
     QSplitter    *splitter{nullptr};
     LeftWidget   *left_widget;
     QWidget      *right_widget;
-    QPushButton  *start_cap;
     QLabel       *show_frame1;
     QLabel       *show_frame2;
     QLabel       *score_overlay;
